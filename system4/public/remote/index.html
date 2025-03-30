@@ -1,0 +1,729 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AI Remote Desktop Control</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    :root {
+      --mac-background: #f5f7fa;
+      --mac-window-bg: rgba(255, 255, 255, 0.95);
+      --mac-sidebar-bg: rgba(239, 239, 244, 0.8);
+      --mac-accent: #0069c2;
+      --mac-accent-hover: #0058a5;
+      --mac-text: #333333;
+      --mac-text-light: #666666;
+      --mac-border: #e1e2e3;
+      --mac-success: #28cd41;
+      --mac-warning: #ff9f0a;
+      --mac-danger: #ff3b30;
+      --mac-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+      --mac-shadow-sm: 0 2px 5px rgba(0, 0, 0, 0.05);
+      --mac-transition: all 0.2s ease-out;
+      --mac-radius: 8px;
+      --mac-radius-sm: 4px;
+      --mac-font: -apple-system, BlinkMacSystemFont, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+    }
+    
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    
+    body {
+      font-family: var(--mac-font);
+      background-color: var(--mac-background);
+      color: var(--mac-text);
+      line-height: 1.5;
+      -webkit-font-smoothing: antialiased;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+    }
+    
+    header {
+      background-color: var(--mac-window-bg);
+      backdrop-filter: blur(10px);
+      border-bottom: 1px solid var(--mac-border);
+      padding: 16px 24px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      box-shadow: var(--mac-shadow-sm);
+      z-index: 10;
+    }
+    
+    h1 {
+      margin: 0;
+      font-size: 20px;
+      font-weight: 500;
+      color: var(--mac-text);
+    }
+    
+    .connection-status {
+      display: flex;
+      align-items: center;
+      font-size: 14px;
+      background-color: rgba(0, 0, 0, 0.05);
+      padding: 6px 12px;
+      border-radius: 100px;
+    }
+    
+    .status-indicator {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      margin-right: 8px;
+    }
+    
+    .connected {
+      background-color: var(--mac-success);
+    }
+    
+    .disconnected {
+      background-color: var(--mac-danger);
+    }
+    
+    main {
+      flex: 1;
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+    
+    .container {
+      display: flex;
+      flex: 1;
+      gap: 20px;
+      max-height: calc(100vh - 160px);
+    }
+    
+    .screen-container {
+      position: relative;
+      flex: 1;
+      border-radius: var(--mac-radius);
+      overflow: hidden;
+      background-color: #000;
+      box-shadow: var(--mac-shadow);
+      border: 1px solid var(--mac-border);
+    }
+    
+    #screen {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+    }
+    
+    .control-panel {
+      width: 320px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+    
+    .panel-section {
+      background-color: var(--mac-window-bg);
+      border-radius: var(--mac-radius);
+      box-shadow: var(--mac-shadow-sm);
+      border: 1px solid var(--mac-border);
+      overflow: hidden;
+    }
+    
+    .panel-header {
+      padding: 12px 16px;
+      border-bottom: 1px solid var(--mac-border);
+      font-weight: 500;
+      font-size: 14px;
+      background-color: rgba(0, 0, 0, 0.02);
+    }
+    
+    .panel-body {
+      padding: 16px;
+    }
+    
+    .ai-control {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+    
+    .ai-input {
+      display: flex;
+      gap: 8px;
+    }
+    
+    #ai-command {
+      flex: 1;
+      padding: 10px 12px;
+      border-radius: var(--mac-radius-sm);
+      border: 1px solid var(--mac-border);
+      font-size: 14px;
+      transition: var(--mac-transition);
+    }
+    
+    #ai-command:focus {
+      outline: none;
+      border-color: var(--mac-accent);
+      box-shadow: 0 0 0 2px rgba(0, 105, 194, 0.2);
+    }
+    
+    button {
+      background-color: var(--mac-accent);
+      color: white;
+      border: none;
+      padding: 8px 16px;
+      border-radius: var(--mac-radius-sm);
+      cursor: pointer;
+      font-size: 14px;
+      font-weight: 500;
+      transition: var(--mac-transition);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+    }
+    
+    button i {
+      margin-right: 6px;
+    }
+    
+    button:hover {
+      background-color: var(--mac-accent-hover);
+    }
+    
+    button:disabled {
+      background-color: rgba(0, 0, 0, 0.1);
+      color: rgba(0, 0, 0, 0.4);
+      cursor: not-allowed;
+    }
+    
+    .keyboard-shortcuts {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+    }
+    
+    .keyboard-shortcuts button {
+      background-color: rgba(0, 0, 0, 0.05);
+      color: var(--mac-text);
+      font-size: 13px;
+      padding: 6px 12px;
+    }
+    
+    .keyboard-shortcuts button:hover {
+      background-color: rgba(0, 0, 0, 0.1);
+    }
+    
+    .ai-actions {
+      max-height: 200px;
+      overflow-y: auto;
+      border: 1px solid var(--mac-border);
+      border-radius: var(--mac-radius-sm);
+      background-color: white;
+    }
+    
+    .action-item {
+      padding: 10px 12px;
+      border-bottom: 1px solid var(--mac-border);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 13px;
+    }
+    
+    .action-item:last-child {
+      border-bottom: none;
+    }
+    
+    .action-buttons {
+      display: flex;
+      gap: 6px;
+    }
+    
+    .action-exec {
+      background-color: var(--mac-success);
+      padding: 4px 8px;
+      font-size: 12px;
+    }
+    
+    .action-exec:hover {
+      background-color: #24b639;
+    }
+    
+    .command-history {
+      overflow-y: auto;
+      max-height: 200px;
+    }
+    
+    .history-item {
+      padding: 12px;
+      margin-bottom: 8px;
+      background-color: white;
+      border-radius: var(--mac-radius-sm);
+      border: 1px solid var(--mac-border);
+    }
+    
+    .history-item h3 {
+      margin-top: 0;
+      font-size: 14px;
+      color: var(--mac-text);
+      font-weight: 600;
+      display: flex;
+      justify-content: space-between;
+    }
+    
+    .history-item pre {
+      background-color: rgba(0, 0, 0, 0.02);
+      padding: 8px;
+      border-radius: var(--mac-radius-sm);
+      overflow-x: auto;
+      font-size: 12px;
+      font-family: 'SF Mono', 'Monaco', monospace;
+      margin-top: 8px;
+    }
+    
+    .history-item .timestamp {
+      font-size: 12px;
+      color: var(--mac-text-light);
+      font-weight: normal;
+    }
+    
+    footer {
+      background-color: var(--mac-window-bg);
+      backdrop-filter: blur(10px);
+      color: var(--mac-text-light);
+      text-align: center;
+      padding: 12px;
+      font-size: 12px;
+      border-top: 1px solid var(--mac-border);
+    }
+    
+    .loading {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      color: white;
+      font-size: 16px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 12px;
+    }
+    
+    .loading-spinner {
+      width: 30px;
+      height: 30px;
+      border: 3px solid rgba(255, 255, 255, 0.2);
+      border-radius: 50%;
+      border-top-color: white;
+      animation: spin 1s linear infinite;
+    }
+    
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+    
+    .hidden {
+      display: none;
+    }
+    
+    .error-message {
+      color: var(--mac-danger);
+      font-size: 13px;
+      margin-top: 8px;
+    }
+    
+    /* Custom Mac-like scrollbar */
+    ::-webkit-scrollbar {
+      width: 8px;
+      height: 8px;
+    }
+    
+    ::-webkit-scrollbar-track {
+      background: rgba(0, 0, 0, 0.05);
+      border-radius: 10px;
+    }
+    
+    ::-webkit-scrollbar-thumb {
+      background: rgba(0, 0, 0, 0.2);
+      border-radius: 10px;
+    }
+    
+    ::-webkit-scrollbar-thumb:hover {
+      background: rgba(0, 0, 0, 0.3);
+    }
+    
+    /* Responsive */
+    @media (max-width: 992px) {
+      .container {
+        flex-direction: column;
+        max-height: none;
+      }
+      
+      .screen-container {
+        height: 50vh;
+      }
+      
+      .control-panel {
+        width: 100%;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>AI Remote Desktop Control</h1>
+    <div class="connection-status">
+      <div class="status-indicator disconnected" id="connection-status"></div>
+      <span id="status-text">Disconnected</span>
+    </div>
+  </header>
+
+  <main>
+    <div class="container">
+      <div class="screen-container">
+        <img id="screen" src="" alt="Remote Desktop">
+        <div class="loading" id="loading">
+          <div class="loading-spinner"></div>
+          <span>Connecting to desktop...</span>
+        </div>
+      </div>
+      
+      <div class="control-panel">
+        <div class="panel-section">
+          <div class="panel-header">
+            AI Command
+          </div>
+          <div class="panel-body">
+            <div class="ai-control">
+              <div class="ai-input">
+                <input type="text" id="ai-command" placeholder="Enter a command (e.g. 'Open Chrome')">
+                <button id="send-command">
+                  <i class="fas fa-paper-plane"></i> Send
+                </button>
+              </div>
+              <div id="ai-actions" class="ai-actions hidden"></div>
+              <div id="error-message" class="error-message hidden"></div>
+            </div>
+          </div>
+        </div>
+        
+        <div class="panel-section">
+          <div class="panel-header">
+            Keyboard Shortcuts
+          </div>
+          <div class="panel-body">
+            <div class="keyboard-shortcuts">
+              <button class="kb-shortcut" data-keys="ctrl+c">
+                <i class="fas fa-copy"></i> Copy
+              </button>
+              <button class="kb-shortcut" data-keys="ctrl+v">
+                <i class="fas fa-paste"></i> Paste
+              </button>
+              <button class="kb-shortcut" data-keys="ctrl+z">
+                <i class="fas fa-undo"></i> Undo
+              </button>
+              <button class="kb-shortcut" data-keys="ctrl+shift+z">
+                <i class="fas fa-redo"></i> Redo
+              </button>
+              <button class="kb-shortcut" data-keys="alt+tab">
+                <i class="fas fa-exchange-alt"></i> Alt+Tab
+              </button>
+              <button class="kb-shortcut" data-keys="ctrl+a">
+                <i class="fas fa-check-double"></i> Select All
+              </button>
+            </div>
+          </div>
+        </div>
+        
+        <div class="panel-section">
+          <div class="panel-header">
+            Command History
+          </div>
+          <div class="panel-body">
+            <div id="command-history" class="command-history">
+              <div class="empty-history">No commands executed yet</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <footer>
+    <p>Gaana AI Voice Assistant &copy; 2023 | <a href="/">Return to Dashboard</a></p>
+  </footer>
+
+  <script src="/socket.io/socket.io.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const screen = document.getElementById('screen');
+      const loading = document.getElementById('loading');
+      const statusIndicator = document.getElementById('connection-status');
+      const statusText = document.getElementById('status-text');
+      const aiCommand = document.getElementById('ai-command');
+      const sendCommand = document.getElementById('send-command');
+      const aiActions = document.getElementById('ai-actions');
+      const errorMessage = document.getElementById('error-message');
+      const commandHistory = document.getElementById('command-history');
+      
+      let socket;
+      let connected = false;
+      
+      function connect() {
+        loading.classList.remove('hidden');
+        
+        // Connect to Socket.io server
+        socket = io();
+        
+        // Connection opened
+        socket.on('connect', () => {
+          console.log('Connected to remote control server');
+          setConnectionStatus(true);
+        });
+        
+        // Connection closed
+        socket.on('disconnect', () => {
+          console.log('Disconnected from remote control server');
+          setConnectionStatus(false);
+        });
+        
+        // Error handling
+        socket.on('error', (data) => {
+          console.error('Socket error:', data);
+          showError(data.message || 'An error occurred');
+        });
+        
+        // Receive screenshot
+        socket.on('screenshot', (data) => {
+          screen.src = `data:image/jpeg;base64,${data.image}`;
+          loading.classList.add('hidden');
+        });
+        
+        // Receive AI command result
+        socket.on('ai-command-result', (data) => {
+          console.log('AI command result:', data);
+          
+          if (data.result && data.result.plan) {
+            displayActionPlan(data.result.plan, data.result.explanation);
+          }
+          
+          addToHistory(data.command, data.result);
+        });
+      }
+      
+      function setConnectionStatus(isConnected) {
+        connected = isConnected;
+        
+        if (isConnected) {
+          statusIndicator.classList.remove('disconnected');
+          statusIndicator.classList.add('connected');
+          statusText.textContent = 'Connected';
+        } else {
+          statusIndicator.classList.remove('connected');
+          statusIndicator.classList.add('disconnected');
+          statusText.textContent = 'Disconnected';
+          screen.src = '';
+          loading.classList.remove('hidden');
+        }
+        
+        sendCommand.disabled = !connected;
+      }
+      
+      function displayActionPlan(actions, explanation) {
+        aiActions.classList.remove('hidden');
+        aiActions.innerHTML = '';
+        
+        if (explanation) {
+          const explainEl = document.createElement('div');
+          explainEl.className = 'action-item explanation';
+          explainEl.textContent = explanation;
+          aiActions.appendChild(explainEl);
+        }
+        
+        actions.forEach((action, index) => {
+          const actionEl = document.createElement('div');
+          actionEl.className = 'action-item';
+          
+          let actionText = '';
+          switch (action.type) {
+            case 'mouse-move':
+              actionText = `Move mouse to (${action.x}, ${action.y})`;
+              break;
+            case 'mouse-click':
+              actionText = `Click ${action.button || 'left'} mouse button`;
+              break;
+            case 'key-tap':
+              actionText = `Press ${action.key}`;
+              if (action.modifiers && action.modifiers.length) {
+                actionText += ` with ${action.modifiers.join('+')}`;
+              }
+              break;
+            case 'type-string':
+              actionText = `Type "${action.text}"`;
+              break;
+            default:
+              actionText = `${action.type}: ${JSON.stringify(action)}`;
+          }
+          
+          const actionTextEl = document.createElement('span');
+          actionTextEl.textContent = `${index + 1}. ${actionText}`;
+          
+          const actionBtns = document.createElement('div');
+          actionBtns.className = 'action-buttons';
+          
+          const execBtn = document.createElement('button');
+          execBtn.className = 'action-exec';
+          execBtn.textContent = 'Execute';
+          execBtn.addEventListener('click', () => executeAction(action));
+          
+          actionBtns.appendChild(execBtn);
+          actionEl.appendChild(actionTextEl);
+          actionEl.appendChild(actionBtns);
+          aiActions.appendChild(actionEl);
+        });
+      }
+      
+      function executeAction(action) {
+        if (!connected) {
+          showError('Not connected to remote control server');
+          return;
+        }
+        
+        console.log('Executing action:', action);
+        
+        switch (action.type) {
+          case 'mouse-move':
+            socket.emit('mouse-move', { x: action.x, y: action.y });
+            break;
+          case 'mouse-click':
+            socket.emit('mouse-click', { button: action.button || 'left', double: action.double || false });
+            break;
+          case 'key-tap':
+            socket.emit('key-tap', { key: action.key, modifiers: action.modifiers || [] });
+            break;
+          case 'type-string':
+            socket.emit('type-string', { text: action.text });
+            break;
+        }
+      }
+      
+      function showError(message) {
+        errorMessage.textContent = message;
+        errorMessage.classList.remove('hidden');
+        
+        setTimeout(() => {
+          errorMessage.classList.add('hidden');
+        }, 5000);
+      }
+      
+      function addToHistory(command, result) {
+        const historyItem = document.createElement('div');
+        historyItem.className = 'history-item';
+        
+        const now = new Date();
+        const timeString = now.toLocaleTimeString();
+        
+        const header = document.createElement('h3');
+        header.innerHTML = `
+          Command
+          <span class="timestamp">${timeString}</span>
+        `;
+        
+        const commandPre = document.createElement('pre');
+        commandPre.textContent = command;
+        
+        historyItem.appendChild(header);
+        historyItem.appendChild(commandPre);
+        
+        if (result) {
+          const resultPre = document.createElement('pre');
+          resultPre.textContent = typeof result === 'object' ? 
+            JSON.stringify(result, null, 2) : result.toString();
+          historyItem.appendChild(resultPre);
+        }
+        
+        commandHistory.innerHTML = '';
+        commandHistory.appendChild(historyItem);
+      }
+      
+      // Handle AI command input
+      sendCommand.addEventListener('click', () => {
+        const command = aiCommand.value.trim();
+        
+        if (!command) {
+          showError('Please enter a command');
+          return;
+        }
+        
+        if (!connected) {
+          showError('Not connected to remote control server');
+          return;
+        }
+        
+        console.log('Sending AI command:', command);
+        socket.emit('ai-command', { command });
+        
+        aiCommand.value = '';
+      });
+      
+      // Handle keyboard shortcuts
+      document.querySelectorAll('.kb-shortcut').forEach(btn => {
+        btn.addEventListener('click', () => {
+          if (!connected) {
+            showError('Not connected to remote control server');
+            return;
+          }
+          
+          const keys = btn.dataset.keys.split('+');
+          
+          if (keys.length === 1) {
+            socket.emit('key-tap', { key: keys[0] });
+          } else {
+            const key = keys.pop();
+            socket.emit('key-tap', { key, modifiers: keys });
+          }
+        });
+      });
+      
+      // Handle keyboard events in the command input
+      aiCommand.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter' && !e.shiftKey) {
+          e.preventDefault();
+          sendCommand.click();
+        }
+      });
+      
+      // Handle screen clicks
+      screen.addEventListener('click', (e) => {
+        if (!connected) {
+          showError('Not connected to remote control server');
+          return;
+        }
+        
+        const rect = screen.getBoundingClientRect();
+        const x = e.clientX - rect.left;
+        const y = e.clientY - rect.top;
+        
+        const relativeX = (x / rect.width) * screen.naturalWidth;
+        const relativeY = (y / rect.height) * screen.naturalHeight;
+        
+        console.log('Screen click at:', relativeX, relativeY);
+        socket.emit('mouse-move', { x: relativeX, y: relativeY });
+        socket.emit('mouse-click', { button: 'left' });
+      });
+      
+      // Connect on page load
+      connect();
+    });
+  </script>
+</body>
+</html> 

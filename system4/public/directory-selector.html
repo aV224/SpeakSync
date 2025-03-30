@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gaana Project Directory Selector</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+            background-color: #f5f7fa;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+        
+        .projects-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 1.5rem;
+        }
+        
+        .project-card {
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .project-card.active {
+            border: 2px solid #34D399;
+        }
+        
+        .directory-preview {
+            max-height: 150px;
+            overflow-y: auto;
+            font-size: 13px;
+        }
+        
+        .loading-spinner {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #3498db;
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            animation: spin 2s linear infinite;
+            margin: 0 auto;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 15px;
+            border-radius: 5px;
+            color: white;
+            opacity: 0;
+            transition: opacity 0.3s ease-in-out;
+            z-index: 1000;
+        }
+        
+        .notification.show {
+            opacity: 1;
+        }
+        
+        .notification.success {
+            background-color: #4CAF50;
+        }
+        
+        .notification.error {
+            background-color: #F44336;
+        }
+        
+        .notification.info {
+            background-color: #2196F3;
+        }
+        
+        /* Project number styling */
+        .project-number {
+            display: inline-block;
+            background-color: #3B82F6;
+            color: white;
+            font-size: 12px;
+            padding: 2px 6px;
+            border-radius: 9999px;
+            margin-right: 6px;
+            font-weight: bold;
+        }
+        
+        .project-title {
+            display: flex;
+            align-items: center;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+        
+        .project-name {
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+    </style>
+</head>
+<body class="bg-gray-100 min-h-screen">
+    <div id="notification" class="notification"></div>
+    
+    <div class="container mx-auto px-4 py-8">
+        <div class="bg-white rounded-lg shadow-md p-6">
+            <h1 class="text-2xl font-bold mb-6 flex items-center">
+                <span class="material-icons mr-2">folder_open</span>
+                Project Directory Selector
+            </h1>
+            
+            <div id="loading-indicator" class="hidden">
+                <div class="loading-spinner"></div>
+                <p class="text-center mt-2" id="loading-text">Loading...</p>
+            </div>
+            
+            <div id="active-project-info" class="mb-6 p-4 bg-green-50 rounded-lg border border-green-200 hidden">
+                <h2 class="text-lg font-semibold mb-2 flex items-center">
+                    <span class="material-icons text-green-600 mr-2">check_circle</span>
+                    Active Project
+                </h2>
+                <div id="active-project-details">
+                    <p class="flex items-center">
+                        <strong>Name:</strong> 
+                        <span id="active-project-name" class="ml-2 flex items-center"></span>
+                    </p>
+                    <p><strong>Path:</strong> <span id="active-project-path" class="text-sm text-gray-600"></span></p>
+                </div>
+            </div>
+            
+            <div class="projects-container mb-6">
+                <h2 class="text-xl font-semibold mb-4 flex items-center">
+                    <span class="material-icons mr-2">folder</span>
+                    Available Projects
+                </h2>
+                
+                <div id="loading-projects" class="text-center py-8">
+                    <div class="loading-spinner mx-auto mb-4"></div>
+                    <p class="text-gray-600">Loading projects...</p>
+                </div>
+                
+                <div id="empty-projects" class="hidden text-center py-8 bg-gray-50 rounded-lg border border-gray-200">
+                    <span class="material-icons text-4xl text-gray-400 mb-2">folder_off</span>
+                    <p class="text-gray-600 mb-4">No projects found</p>
+                    <button class="btn btn-primary" id="create-first-project-btn">Create Your First Project</button>
+                </div>
+                
+                <div id="projects-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 hidden">
+                    <!-- Projects will be inserted here by JS -->
+                </div>
+            </div>
+            
+            <div class="mb-4">
+                <h2 class="text-xl font-semibold">Import Project</h2>
+                <form id="import-zip-form" class="mt-2" method="post" enctype="multipart/form-data">
+                    <div class="mb-3">
+                        <label for="zip-project-name" class="block text-sm font-medium">Project Name</label>
+                        <input type="text" id="zip-project-name" name="name" class="mt-1 w-full px-3 py-2 border border-gray-300 rounded-md">
+                        <p class="text-xs text-gray-500 mt-1">If not provided, the zip filename will be used</p>
+                    </div>
+                    <div class="mb-3">
+                        <label for="zip-file" class="block text-sm font-medium">Zip File *</label>
+                        <input type="file" id="zip-file" name="zipFile" accept=".zip" class="mt-1 w-full px-3 py-2 border border-gray-300 rounded-md" required>
+                        <p class="text-xs text-gray-500 mt-1">Your zip file will be automatically extracted into the projects folder</p>
+                    </div>
+                    <button type="submit" class="w-full mt-2 px-4 py-2 bg-purple-600 text-white font-medium rounded-md hover:bg-purple-700 flex items-center justify-center">
+                        <span class="material-icons mr-2">upload_file</span>
+                        Import Project
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Utility functions for UI -->
+    <script>
+        // App utilities
+        window.appUtils = {
+            showNotification: function(message, type = 'info', duration = 3000) {
+                const notification = document.getElementById('notification');
+                notification.textContent = message;
+                notification.className = 'notification';
+                notification.classList.add(type);
+                notification.classList.add('show');
+                
+                setTimeout(() => {
+                    notification.classList.remove('show');
+                }, duration);
+            },
+            
+            showLoading: function(message = 'Loading...', duration = 0) {
+                const loadingIndicator = document.getElementById('loading-indicator');
+                const loadingText = document.getElementById('loading-text');
+                
+                loadingText.textContent = message;
+                loadingIndicator.classList.remove('hidden');
+                
+                if (duration > 0) {
+                    setTimeout(() => {
+                        this.hideLoading();
+                    }, duration);
+                }
+            },
+            
+            hideLoading: function() {
+                const loadingIndicator = document.getElementById('loading-indicator');
+                loadingIndicator.classList.add('hidden');
+            },
+            
+            reloadProjects: function() {
+                const projectsContainer = document.getElementById('projects-container');
+                if (window.projectManager && window.projectManager.loadProjects) {
+                    window.projectManager.loadProjects();
+                }
+            }
+        };
+    </script>
+    
+    <script src="/js/projectManager.js"></script>
+</body>
+</html> 

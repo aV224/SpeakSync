@@ -1,0 +1,92 @@
+/**
+ * Claude Drop-in Replacement
+ * 
+ * This file is a direct drop-in replacement for the claude.js file in the parent project.
+ * It exports a function that has the same signature as the original executeSpeechCommand
+ * but uses our reliable direct executor to ensure that Claude CLI commands work correctly.
+ * 
+ * To use this:
+ * 1. Copy this file to /Users/kousthubhveturi/Desktop/gaana/backend/src/config/claude.js
+ * 2. Or require this file in the original claude.js and replace the executeSpeechCommand function
+ */
+
+const path = require('path');
+const fs = require('fs');
+const { executeSpeechCommand: directExecutor } = require(path.join(__dirname, 'claude_direct_executor'));
+
+// Conversation state storage
+const conversationState = {};
+
+// This function has the same signature as the original executeSpeechCommand
+// and can be used as a direct replacement
+async function executeSpeechCommand(command, workingDir, options = {}) {
+  try {
+    // Get the user ID from options or use a default
+    const userId = options.userId || 'default';
+    
+    // Log the incoming command
+    console.log(`[claude_dropin] Executing command for user ${userId}: "${command}"`);
+    
+    // Process special commands
+    if (command.toLowerCase().match(/^project\s+\d+/i)) {
+      // This is a project selection command
+      const projectMatch = command.match(/project\s+(\d+)/i);
+      if (projectMatch) {
+        const projectNumber = projectMatch[1];
+        
+        // Store the selected project in the conversation state
+        conversationState[userId] = {
+          projectNumber: projectNumber,
+          awaitingCommand: true,
+          lastCommandTime: Date.now()
+        };
+        
+        return `Project ${projectNumber} selected. What would you like Claude to do?`;
+      }
+    }
+    
+    // Check if we're in a project context
+    if (conversationState[userId] && conversationState[userId].awaitingCommand) {
+      const projectNumber = conversationState[userId].projectNumber;
+      
+      // Clear the awaiting flag so next command isn't automatically in this context
+      conversationState[userId].awaitingCommand = false;
+      
+      // Set the working directory to the selected project
+      const projectPath = path.join('/Users/kousthubhveturi/Desktop/gaana/projects', `project${projectNumber}`);
+      
+      // Check if the project directory exists
+      if (fs.existsSync(projectPath)) {
+        workingDir = projectPath;
+      } else {
+        // Try using the brainClassify directory as a fallback
+        const brainClassifyPath = '/Users/kousthubhveturi/Desktop/gaana/projects/brainClassify';
+        if (fs.existsSync(brainClassifyPath)) {
+          workingDir = brainClassifyPath;
+        }
+      }
+      
+      console.log(`[claude_dropin] Using project directory: ${workingDir}`);
+    }
+    
+    // Execute the command using our reliable executor
+    const result = await directExecutor(command, workingDir, options);
+    return result;
+  } catch (error) {
+    console.error(`[claude_dropin] Error: ${error.message}`);
+    throw error;
+  }
+}
+
+// Export the function
+module.exports = {
+  executeSpeechCommand
+};
+
+// If this file is executed directly, show usage info
+if (require.main === module) {
+  console.log('This is a drop-in replacement for claude.js');
+  console.log('To use this, either:');
+  console.log('1. Copy this file to /Users/kousthubhveturi/Desktop/gaana/backend/src/config/claude.js');
+  console.log('2. Or require this file in the original claude.js and replace the executeSpeechCommand function');
+}

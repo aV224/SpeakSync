@@ -1,0 +1,335 @@
+/* Directory permissions */
+.directory-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  width: 100%;
+}
+
+.directory-item {
+  background-color: var(--bg-secondary);
+  border-radius: 8px;
+  padding: 12px;
+  border: 1px solid var(--border-color);
+  transition: all 0.2s ease;
+}
+
+.directory-item:hover {
+  border-color: var(--accent-color);
+}
+
+.directory-header {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+}
+
+.directory-icon {
+  font-size: 24px;
+  color: var(--accent-color);
+  padding-top: 4px;
+}
+
+.directory-content {
+  flex: 1;
+}
+
+.directory-name {
+  margin: 0 0 4px 0;
+  font-weight: 600;
+}
+
+.directory-path {
+  margin: 0 0 4px 0;
+  font-family: var(--font-mono);
+  font-size: 13px;
+  color: var(--text-secondary);
+  word-break: break-all;
+}
+
+.directory-description {
+  margin: 0;
+  font-size: 14px;
+  color: var(--text-secondary);
+}
+
+.directory-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.directory-details {
+  margin-top: 12px;
+  padding-top: 12px;
+  border-top: 1px solid var(--border-color);
+}
+
+.permission-badges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 3px 8px;
+  border-radius: 4px;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.badge-success {
+  background-color: rgba(var(--success-rgb), 0.15);
+  color: var(--success-color);
+}
+
+.badge-danger {
+  background-color: rgba(var(--error-rgb), 0.15);
+  color: var(--error-color);
+}
+
+.badge-info {
+  background-color: rgba(var(--info-rgb), 0.15);
+  color: var(--info-color);
+}
+
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 24px;
+  gap: 12px;
+  color: var(--text-secondary);
+}
+
+.empty-state i {
+  font-size: 24px;
+  opacity: 0.7;
+}
+
+.empty-state.error {
+  color: var(--error-color);
+}
+
+.retry-btn {
+  margin-top: 8px;
+}
+
+/* Directory modal */
+.modal-content {
+  width: 500px;
+  max-width: 100%;
+}
+
+.directory-form-group {
+  margin-bottom: 16px;
+}
+
+.directory-form-group label {
+  display: block;
+  margin-bottom: 6px;
+  font-weight: 500;
+}
+
+.directory-form-group input[type="text"],
+.directory-form-group textarea {
+  width: 100%;
+  padding: 8px 12px;
+  border: 1px solid var(--border-color);
+  border-radius: 4px;
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
+  font-size: 14px;
+  transition: border-color 0.2s;
+}
+
+.directory-form-group input[type="text"]:focus,
+.directory-form-group textarea:focus {
+  border-color: var(--accent-color);
+  outline: none;
+}
+
+.directory-form-group textarea {
+  min-height: 80px;
+  resize: vertical;
+}
+
+.checkbox-group {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+.checkbox-group input[type="checkbox"] {
+  margin: 0;
+}
+
+.form-help {
+  font-size: 12px;
+  color: var(--text-secondary);
+  margin-top: 4px;
+}
+
+.modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  margin-top: 24px;
+}
+
+/* API key handling */
+.api-key-input {
+  position: relative;
+  display: flex;
+  width: 100%;
+}
+
+.api-key-input input {
+  flex: 1;
+  padding-right: 40px !important;
+}
+
+.api-key-input button {
+  position: absolute;
+  right: 0;
+  top: 0;
+  height: 100%;
+  background: none;
+  border: none;
+  color: var(--text-secondary);
+  cursor: pointer;
+  padding: 0 12px;
+}
+
+.api-key-input button:hover {
+  color: var(--accent-color);
+}
+
+/* Project number styles */
+.project-number {
+    display: inline-block;
+    background-color: #3498db;
+    color: white;
+    font-weight: bold;
+    padding: 2px 8px;
+    border-radius: 12px;
+    margin-right: 10px;
+    font-size: 0.9em;
+}
+
+.dark-mode .project-number {
+    background-color: #2980b9;
+}
+
+/* Project card styles */
+.project-card {
+    background-color: #f8f9fa;
+    border-radius: 8px;
+    padding: 16px;
+    margin-bottom: 16px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    transition: transform 0.2s, box-shadow 0.2s;
+    cursor: pointer;
+}
+
+.dark-mode .project-card {
+    background-color: #2d3436;
+    color: #f8f9fa;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+.project-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+}
+
+.project-card.default-project {
+    border-left: 4px solid #f39c12;
+}
+
+.project-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 12px;
+}
+
+.project-info {
+    display: flex;
+    align-items: center;
+}
+
+.project-name {
+    font-size: 1.2em;
+    margin: 0;
+}
+
+.default-badge {
+    background-color: #f39c12;
+    color: white;
+    font-size: 0.7em;
+    padding: 3px 8px;
+    border-radius: 4px;
+    margin-left: 10px;
+}
+
+.project-actions {
+    display: flex;
+}
+
+.btn-icon {
+    background: none;
+    border: none;
+    font-size: 1.1em;
+    padding: 5px 8px;
+    cursor: pointer;
+    margin-left: 5px;
+    color: #7f8c8d;
+    border-radius: 4px;
+    transition: background-color 0.2s, color 0.2s;
+}
+
+.dark-mode .btn-icon {
+    color: #bdc3c7;
+}
+
+.btn-icon:hover {
+    background-color: rgba(0, 0, 0, 0.1);
+    color: #2c3e50;
+}
+
+.dark-mode .btn-icon:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+    color: #ecf0f1;
+}
+
+.set-default-btn:hover {
+    color: #f39c12;
+}
+
+.delete-project-btn:hover {
+    color: #e74c3c;
+}
+
+.project-card-body {
+    color: #7f8c8d;
+    font-size: 0.9em;
+}
+
+.dark-mode .project-card-body {
+    color: #95a5a6;
+}
+
+.project-details p {
+    margin: 4px 0;
+}
+
+.project-path {
+    font-family: monospace;
+    word-break: break-all;
+} 

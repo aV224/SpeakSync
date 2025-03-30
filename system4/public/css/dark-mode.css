@@ -1,0 +1,455 @@
+/* Dark Mode Styles */
+
+/* Default mode (light) variables */
+:root {
+    --bg-color: #f8f9fa;
+    --content-bg: #ffffff;
+    --text-color: #212529;
+    --text-muted: #6c757d;
+    --border-color: #e1e5eb;
+    --card-bg: #ffffff;
+    --sidebar-bg: #343a40;
+    --sidebar-text: #f8f9fa;
+    --sidebar-active: #ffffff;
+    --sidebar-hover: rgba(255, 255, 255, 0.1);
+    --primary-color: #007bff;
+    --secondary-color: #6c757d;
+    --success-color: #28a745;
+    --danger-color: #dc3545;
+    --warning-color: #ffc107;
+    --info-color: #17a2b8;
+    --card-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+    --hover-shadow: 0 10px 15px rgba(0, 0, 0, 0.1);
+    --header-bg: #ffffff;
+    --notification-bg: #ffffff;
+    --notification-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+    --theme-transition: all 0.3s ease-in-out;
+}
+
+/* Dark mode variables */
+body.dark-mode {
+    --bg-color: #121212;
+    --content-bg: #1e1e1e;
+    --text-color: #e0e0e0;
+    --text-muted: #a0a0a0;
+    --border-color: #333333;
+    --card-bg: #252525;
+    --sidebar-bg: #1a1a1a;
+    --sidebar-text: #e0e0e0;
+    --sidebar-active: #ffffff;
+    --sidebar-hover: rgba(255, 255, 255, 0.05);
+    --primary-color: #0d6efd;
+    --secondary-color: #6c757d;
+    --success-color: #198754;
+    --danger-color: #dc3545;
+    --warning-color: #ffc107;
+    --info-color: #0dcaf0;
+    --card-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+    --hover-shadow: 0 10px 15px rgba(0, 0, 0, 0.3);
+    --header-bg: #1a1a1a;
+    --notification-bg: #252525;
+    --notification-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+}
+
+/* Apply theme variables */
+body {
+    background-color: var(--bg-color);
+    color: var(--text-color);
+    transition: var(--theme-transition);
+}
+
+.content {
+    background-color: var(--content-bg);
+    transition: var(--theme-transition);
+}
+
+.sidebar {
+    background-color: var(--sidebar-bg);
+    color: var(--sidebar-text);
+    transition: var(--theme-transition);
+}
+
+.sidebar-item a {
+    color: var(--sidebar-text);
+    transition: var(--theme-transition);
+}
+
+.sidebar-item:hover {
+    background-color: var(--sidebar-hover);
+}
+
+.sidebar-item.active {
+    background-color: var(--primary-color);
+}
+
+.card {
+    background-color: var(--card-bg);
+    color: var(--text-color);
+    border-color: var(--border-color);
+    box-shadow: var(--card-shadow);
+    transition: var(--theme-transition);
+}
+
+.header {
+    background-color: var(--header-bg);
+    border-bottom-color: var(--border-color);
+    transition: var(--theme-transition);
+}
+
+.title {
+    color: var(--text-color);
+}
+
+.form-control {
+    background-color: var(--card-bg);
+    color: var(--text-color);
+    border-color: var(--border-color);
+    transition: var(--theme-transition);
+}
+
+.form-control:focus {
+    background-color: var(--card-bg);
+    color: var(--text-color);
+}
+
+.form-label {
+    color: var(--text-color);
+}
+
+.btn-primary {
+    background-color: var(--primary-color);
+    border-color: var(--primary-color);
+}
+
+.btn-secondary {
+    background-color: var(--secondary-color);
+    border-color: var(--secondary-color);
+}
+
+.btn-success {
+    background-color: var(--success-color);
+    border-color: var(--success-color);
+}
+
+.btn-danger {
+    background-color: var(--danger-color);
+    border-color: var(--danger-color);
+}
+
+.notification {
+    background-color: var(--notification-bg);
+    color: var(--text-color);
+    box-shadow: var(--notification-shadow);
+    transition: var(--theme-transition);
+}
+
+.notification-success {
+    border-left-color: var(--success-color);
+}
+
+.notification-error {
+    border-left-color: var(--danger-color);
+}
+
+.notification-warning {
+    border-left-color: var(--warning-color);
+}
+
+.notification-info {
+    border-left-color: var(--info-color);
+}
+
+.empty-state {
+    color: var(--text-muted);
+}
+
+.project-card {
+    background-color: var(--card-bg);
+    border-color: var(--border-color);
+    transition: var(--theme-transition);
+}
+
+.project-name {
+    color: var(--text-color);
+}
+
+.project-path, .project-type {
+    color: var(--text-muted);
+}
+
+.status-chip {
+    background-color: var(--content-bg);
+    border-color: var(--border-color);
+    color: var(--text-color);
+}
+
+.provider-item {
+    background-color: var(--card-bg);
+    border-color: var(--border-color);
+    transition: var(--theme-transition);
+}
+
+/* Dark mode toggle button styling */
+.theme-toggle-btn {
+    background-color: transparent;
+    color: var(--text-color);
+    border: 1px solid var(--border-color);
+    padding: 8px 12px;
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+    transition: var(--theme-transition);
+}
+
+.theme-toggle-btn:hover {
+    background-color: var(--sidebar-hover);
+}
+
+body.dark-mode .fa-moon {
+    display: none;
+}
+
+body:not(.dark-mode) .fa-sun {
+    display: none;
+}
+
+/* Dark Mode Styles for Gaana AI Assistant */
+
+:root.dark-mode {
+  --mac-background: linear-gradient(135deg, #1a1c20 0%, #121418 100%);
+  --mac-window-bg: rgba(30, 32, 36, 0.8);
+  --mac-sidebar-bg: rgba(25, 27, 30, 0.7);
+  --mac-accent: #0584e0;
+  --mac-accent-hover: #0476c9;
+  --mac-accent-gradient: linear-gradient(135deg, #0584e0 0%, #0476c9 100%);
+  --mac-text: #e2e4e8;
+  --mac-text-light: #a0a4aa;
+  --mac-border: rgba(60, 63, 68, 0.7);
+  --mac-shadow: 0 8px 30px rgba(0, 0, 0, 0.3);
+  --mac-shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.2);
+}
+
+.dark-mode body {
+  background-color: var(--mac-background);
+  color: var(--mac-text);
+}
+
+.dark-mode .app-container {
+  background-color: var(--mac-window-bg);
+  border-color: var(--mac-border);
+}
+
+.dark-mode .sidebar {
+  background-color: var(--mac-sidebar-bg);
+  border-right-color: var(--mac-border);
+}
+
+.dark-mode .sidebar-title {
+  color: var(--mac-text-light);
+}
+
+.dark-mode .sidebar-item:hover {
+  background-color: rgba(255, 255, 255, 0.05);
+}
+
+.dark-mode .header {
+  border-bottom-color: var(--mac-border);
+}
+
+.dark-mode .title {
+  color: var(--mac-text);
+}
+
+.dark-mode .status-chip {
+  background-color: rgba(255, 255, 255, 0.05);
+}
+
+.dark-mode .card,
+.dark-mode .section {
+  background: rgba(40, 42, 46, 0.7);
+  border-color: var(--mac-border);
+}
+
+.dark-mode .card-header,
+.dark-mode .section-header {
+  border-bottom-color: var(--mac-border);
+}
+
+.dark-mode .card-title,
+.dark-mode .section-title {
+  color: var(--mac-text);
+}
+
+.dark-mode .card-body,
+.dark-mode .section-body {
+  color: var(--mac-text-light);
+}
+
+.dark-mode .card-footer,
+.dark-mode .section-footer {
+  border-top-color: var(--mac-border);
+}
+
+.dark-mode .ai-provider-switch {
+  background-color: rgba(40, 42, 46, 0.8);
+  color: var(--mac-text-light);
+  border: 1px solid var(--mac-border);
+}
+
+.dark-mode .ai-provider-switch:hover {
+  background-color: var(--mac-accent);
+  color: white;
+}
+
+.dark-mode .provider-features {
+  color: var(--mac-text-light);
+  font-style: italic;
+  margin-top: 5px;
+}
+
+.dark-mode .badge {
+  color: white;
+  font-size: 0.75rem;
+  padding: 0.2rem 0.5rem;
+  border-radius: 12px;
+  margin-left: 5px;
+}
+
+.dark-mode .badge-success {
+  background: rgba(46, 204, 113, 0.3);
+  border: 1px solid rgba(46, 204, 113, 0.5);
+}
+
+.dark-mode .badge-info {
+  background: rgba(52, 152, 219, 0.3);
+  border: 1px solid rgba(52, 152, 219, 0.5);
+}
+
+.dark-mode .form-label {
+  color: var(--mac-text);
+}
+
+.dark-mode .form-control {
+  background-color: rgba(20, 22, 26, 0.7);
+  border-color: var(--mac-border);
+  color: var(--mac-text);
+}
+
+.dark-mode .form-control:focus {
+  border-color: var(--mac-accent);
+  box-shadow: 0 0 0 3px rgba(5, 132, 224, 0.2);
+}
+
+.dark-mode .form-control::placeholder {
+  color: rgba(160, 164, 170, 0.6);
+}
+
+.dark-mode .btn-secondary {
+  background-color: rgba(255, 255, 255, 0.1);
+  color: var(--mac-text);
+}
+
+.dark-mode .btn-secondary:hover {
+  background-color: rgba(255, 255, 255, 0.15);
+}
+
+.dark-mode .project-item {
+  background: rgba(40, 42, 46, 0.7);
+  border-color: var(--mac-border);
+}
+
+.dark-mode .project-item:hover {
+  border-color: rgba(5, 132, 224, 0.3);
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
+}
+
+.dark-mode .project-name {
+  color: var(--mac-text);
+}
+
+.dark-mode .project-path {
+  color: var(--mac-text-light);
+}
+
+.dark-mode .project-type {
+  background-color: rgba(255, 255, 255, 0.05);
+  color: var(--mac-text-light);
+}
+
+.dark-mode .btn-delete {
+  background-color: rgba(255, 59, 48, 0.2);
+}
+
+.dark-mode .btn-delete:hover {
+  background-color: rgba(255, 59, 48, 0.3);
+}
+
+.dark-mode .btn-default {
+  background-color: rgba(5, 132, 224, 0.2);
+}
+
+.dark-mode .btn-default:hover {
+  background-color: rgba(5, 132, 224, 0.3);
+}
+
+.dark-mode .empty-state {
+  color: var(--mac-text-light);
+}
+
+.dark-mode .loading-overlay {
+  background-color: rgba(20, 22, 26, 0.7);
+}
+
+.dark-mode .notification {
+  background: rgba(40, 42, 46, 0.9);
+  color: var(--mac-text);
+}
+
+.dark-mode ::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.dark-mode ::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.dark-mode ::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.15);
+}
+
+/* Special hover effects for dark mode */
+.dark-mode .card.hover-lift:hover {
+  box-shadow: 0 12px 25px rgba(0, 0, 0, 0.4), 0 0 15px rgba(5, 132, 224, 0.2);
+}
+
+/* Glowing effects for dark mode */
+.dark-mode .status-indicator.status-success {
+  box-shadow: 0 0 10px rgba(40, 205, 65, 0.5);
+}
+
+.dark-mode .status-indicator.status-warning {
+  box-shadow: 0 0 10px rgba(255, 159, 10, 0.5);
+}
+
+.dark-mode .status-indicator.status-danger {
+  box-shadow: 0 0 10px rgba(255, 59, 48, 0.5);
+}
+
+/* Dark mode notification styles */
+.dark-mode .notification.info {
+  background: rgba(52, 152, 219, 0.2);
+}
+
+.dark-mode .notification.success {
+  background: rgba(46, 204, 113, 0.2);
+}
+
+.dark-mode .notification.warning {
+  background: rgba(241, 196, 15, 0.2);
+}
+
+.dark-mode .notification.error {
+  background: rgba(231, 76, 60, 0.2);
+} 

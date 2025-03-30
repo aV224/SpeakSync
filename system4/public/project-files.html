@@ -1,0 +1,736 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Project Files</title>
+  <link rel="stylesheet" href="css/style.css">
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      line-height: 1.6;
+      color: #333;
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 20px;
+    }
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background-color: #f8f9fa;
+      padding: 20px;
+      border-radius: 5px;
+      margin-bottom: 20px;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    }
+    h1 {
+      margin: 0;
+      color: #007bff;
+    }
+    .btn {
+      padding: 8px 12px;
+      cursor: pointer;
+      border: none;
+      border-radius: 4px;
+      font-weight: 500;
+      transition: background-color 0.2s;
+    }
+    .btn-sm {
+      padding: 4px 8px;
+      font-size: 12px;
+    }
+    .btn-primary {
+      background-color: #007bff;
+      color: #fff;
+    }
+    .btn-primary:hover {
+      background-color: #0069d9;
+    }
+    .btn-secondary {
+      background-color: #6c757d;
+      color: white;
+    }
+    .btn-secondary:hover {
+      background-color: #5a6268;
+    }
+    .file-explorer {
+      display: grid;
+      grid-template-columns: 300px 1fr;
+      gap: 20px;
+      height: calc(100vh - 150px);
+      overflow: hidden;
+    }
+    .file-tree {
+      width: 100%;
+      font-size: 14px;
+    }
+    .file-content {
+      background-color: #fff;
+      padding: 15px;
+      border-radius: 5px;
+      overflow-y: auto;
+      max-height: 100%;
+      border: 1px solid #dee2e6;
+    }
+    .folder, .file {
+      margin: 4px 0;
+      padding: 4px 6px;
+      border-radius: 4px;
+      cursor: pointer;
+      user-select: none;
+      display: flex;
+      align-items: center;
+      font-size: 14px;
+      min-width: max-content;
+    }
+    .folder:hover, .file:hover {
+      background-color: rgba(0,123,255,0.1);
+    }
+    .folder-name, .file-name {
+      margin-left: 6px;
+      white-space: nowrap;
+    }
+    .folder-icon, .file-icon {
+      font-size: 14px;
+      width: 16px;
+      text-align: center;
+      flex-shrink: 0;
+    }
+    .folder-icon:before {
+      content: "📁";
+    }
+    .folder.open .folder-icon:before {
+      content: "📂";
+    }
+    .file-icon:before {
+      content: "📄";
+    }
+    .folder-contents {
+      margin-left: 16px;
+      display: none;
+      width: 100%;
+      position: relative;
+    }
+    .folder.open > .folder-contents {
+      display: block;
+      position: relative;
+    }
+    
+    .folder-contents::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      left: 4px;
+      width: 1px;
+      background-color: #dee2e6;
+    }
+    
+    .file:hover .file-name, .folder:hover .folder-name {
+      text-decoration: underline;
+    }
+    
+    .file-tree-container {
+      position: relative;
+      overflow: hidden;
+      border-radius: 5px;
+      border: 1px solid #dee2e6;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+    }
+    
+    .file-tree-header {
+      padding: 10px 15px;
+      background-color: #e9ecef;
+      border-bottom: 1px solid #dee2e6;
+      font-weight: 500;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    
+    .file-tree-scroll-wrapper {
+      flex: 1;
+      overflow: auto;
+      padding: 15px;
+      background-color: #f8f9fa;
+    }
+    
+    .code-preview {
+      font-family: 'Courier New', Courier, monospace;
+      background-color: #f5f5f5;
+      padding: 15px;
+      border-radius: 5px;
+      white-space: pre-wrap;
+      overflow-x: auto;
+      font-size: 13px;
+    }
+    
+    .loading {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100%;
+    }
+    
+    .spinner {
+      width: 40px;
+      height: 40px;
+      border: 4px solid rgba(0,0,0,0.1);
+      border-radius: 50%;
+      border-top-color: #007bff;
+      animation: spin 1s ease-in-out infinite;
+    }
+    
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+    
+    .path-breadcrumbs {
+      margin-bottom: 15px;
+      padding: 8px;
+      background-color: #f8f9fa;
+      border-radius: 5px;
+      white-space: nowrap;
+      overflow-x: auto;
+      font-size: 13px;
+    }
+    
+    .breadcrumb-item {
+      display: inline-block;
+      cursor: pointer;
+      padding: 2px 4px;
+    }
+    
+    .breadcrumb-item:hover {
+      text-decoration: underline;
+    }
+    
+    .breadcrumb-separator {
+      margin: 0 3px;
+      color: #6c757d;
+    }
+    
+    .file-info {
+      color: #6c757d;
+      font-size: 13px;
+      margin-bottom: 10px;
+    }
+    
+    .binary-file-message {
+      text-align: center;
+      padding: 20px;
+      color: #6c757d;
+    }
+    
+    .alert {
+      padding: 10px;
+      margin-bottom: 15px;
+      border-radius: 5px;
+    }
+    
+    .alert-danger {
+      background-color: #f8d7da;
+      color: #721c24;
+      border: 1px solid #f5c6cb;
+    }
+    
+    .file-preview-actions {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 10px;
+    }
+    
+    .empty-content {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      height: 100%;
+      color: #6c757d;
+    }
+    
+    .empty-content i {
+      font-size: 48px;
+      margin-bottom: 15px;
+    }
+    
+    .code-line {
+      counter-increment: line;
+      position: relative;
+      display: block;
+      font-size: 13px;
+    }
+    
+    .code-line::before {
+      content: counter(line);
+      display: inline-block;
+      width: 30px;
+      color: #999;
+      text-align: right;
+      margin-right: 10px;
+      user-select: none;
+      font-size: 12px;
+    }
+    
+    .code-preview {
+      counter-reset: line;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1 id="project-name">Project Files</h1>
+    <div>
+      <button id="back-button" class="btn btn-secondary">Back to Projects</button>
+      <button id="set-active-button" class="btn btn-primary">Set as Active Project</button>
+    </div>
+  </header>
+
+  <div id="error-container" class="mb-4"></div>
+
+  <div class="file-explorer">
+    <div class="file-tree-container">
+      <div class="file-tree-header">
+        <span>Files</span>
+        <button id="collapse-all-btn" class="btn btn-sm btn-secondary">Collapse All</button>
+      </div>
+      <div class="file-tree-scroll-wrapper">
+        <div class="file-tree" id="file-tree">
+          <div class="loading">
+            <div class="spinner"></div>
+            <p class="mt-3 text-center text-gray-600">Loading project files...</p>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="file-content" id="file-content">
+      <div class="empty-content">
+        <div>📂</div>
+        <p>Select a file to view its contents</p>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', async () => {
+      // Elements
+      const projectNameElement = document.getElementById('project-name');
+      const fileTreeElement = document.getElementById('file-tree');
+      const fileContentElement = document.getElementById('file-content');
+      const backButton = document.getElementById('back-button');
+      const setActiveButton = document.getElementById('set-active-button');
+      const errorContainer = document.getElementById('error-container');
+      const collapseAllButton = document.getElementById('collapse-all-btn');
+      
+      // State
+      let projectId = null;
+      let projectData = null;
+      let projectStructure = null;
+      let currentFile = null;
+      
+      // Helper functions
+      function showError(message) {
+        errorContainer.innerHTML = `
+          <div class="alert alert-danger">
+            <strong>Error:</strong> ${message}
+          </div>
+        `;
+        
+        // Hide loading indicator
+        const loadingIndicator = fileTreeElement.querySelector('.loading');
+        if (loadingIndicator) {
+          loadingIndicator.style.display = 'none';
+        }
+      }
+      
+      function clearError() {
+        errorContainer.innerHTML = '';
+      }
+      
+      function getQueryParam(param) {
+        const urlParams = new URLSearchParams(window.location.search);
+        return urlParams.get(param);
+      }
+      
+      // Fetch project data
+      async function fetchProjectData() {
+        try {
+          const response = await fetch(`/api/projects/${projectId}`);
+          
+          if (!response.ok) {
+            throw new Error(`Failed to fetch project data: ${response.status} ${response.statusText}`);
+          }
+          
+          return await response.json();
+        } catch (error) {
+          console.error('Error fetching project data:', error);
+          showError(`Failed to load project: ${error.message}`);
+          return null;
+        }
+      }
+      
+      // Fetch project structure
+      async function fetchProjectStructure() {
+        try {
+          const response = await fetch(`/api/projects/${projectId}/structure?depth=10`);
+          
+          if (!response.ok) {
+            throw new Error('Failed to fetch project structure');
+          }
+          
+          return await response.json();
+        } catch (error) {
+          console.error('Error fetching project structure:', error);
+          showError(`Failed to load project structure: ${error.message}`);
+          return null;
+        }
+      }
+      
+      // Render file tree
+      function renderFileTree(structure, parentElement = fileTreeElement) {
+        // Clear parent element if it's the root
+        if (parentElement === fileTreeElement) {
+          parentElement.innerHTML = '';
+          
+          // Add root folder navigation help text
+          const helpText = document.createElement('div');
+          helpText.className = 'text-gray-500 text-xs mb-3';
+          helpText.innerHTML = 'Tip: Scroll horizontally to see deeply nested files. Click on folders to expand/collapse.';
+          parentElement.appendChild(helpText);
+        }
+        
+        // Sort entries: folders first, then files, both alphabetically
+        const sortedEntries = Object.entries(structure).sort((a, b) => {
+          const aIsDir = typeof a[1] === 'object';
+          const bIsDir = typeof b[1] === 'object';
+          
+          if (aIsDir && !bIsDir) return -1;
+          if (!aIsDir && bIsDir) return 1;
+          
+          return a[0].localeCompare(b[0]);
+        });
+        
+        // Create elements for each entry
+        for (const [name, value] of sortedEntries) {
+          if (typeof value === 'object') {
+            // This is a directory
+            const folderElement = document.createElement('div');
+            folderElement.className = 'folder';
+            folderElement.innerHTML = `
+              <span class="folder-icon"></span>
+              <span class="folder-name">${name}</span>
+            `;
+            
+            const folderContents = document.createElement('div');
+            folderContents.className = 'folder-contents';
+            
+            // Add indication of item count
+            const childCount = Object.keys(value).length;
+            if (childCount > 0) {
+              const countIndicator = document.createElement('span');
+              countIndicator.className = 'text-xs text-gray-500 ml-2';
+              countIndicator.textContent = `(${childCount} items)`;
+              folderElement.querySelector('.folder-name').appendChild(countIndicator);
+            }
+            
+            folderElement.addEventListener('click', (e) => {
+              e.stopPropagation();
+              folderElement.classList.toggle('open');
+            });
+            
+            folderElement.appendChild(folderContents);
+            parentElement.appendChild(folderElement);
+            
+            // Recursively render contents
+            renderFileTree(value, folderContents);
+          } else {
+            // This is a file
+            const fileElement = document.createElement('div');
+            fileElement.className = 'file';
+            fileElement.dataset.path = value; // Store the full path
+            fileElement.innerHTML = `
+              <span class="file-icon"></span>
+              <span class="file-name">${name}</span>
+            `;
+            
+            fileElement.addEventListener('click', async (e) => {
+              e.stopPropagation();
+              // Fetch and display file content
+              await fetchFileContent(value);
+            });
+            
+            parentElement.appendChild(fileElement);
+          }
+        }
+      }
+      
+      // Fetch file content
+      async function fetchFileContent(filePath) {
+        try {
+          // Show loading state
+          fileContentElement.innerHTML = `
+            <div class="loading">
+              <div class="spinner"></div>
+            </div>
+          `;
+          
+          currentFile = filePath;
+          
+          // Get file extension to determine if it's potentially binary
+          const fileExtension = filePath.split('.').pop().toLowerCase();
+          const binaryExtensions = ['png', 'jpg', 'jpeg', 'gif', 'pdf', 'zip', 'exe', 'dll', 'so', 'bin'];
+          
+          if (binaryExtensions.includes(fileExtension)) {
+            fileContentElement.innerHTML = `
+              <div class="path-breadcrumbs">
+                ${renderBreadcrumbs(filePath)}
+              </div>
+              <div class="file-info">
+                <strong>File Path:</strong> ${filePath}
+              </div>
+              <div class="binary-file-message">
+                <p>This appears to be a binary file and cannot be displayed in the browser.</p>
+                <p>File type: ${fileExtension.toUpperCase()}</p>
+              </div>
+            `;
+            return;
+          }
+          
+          const response = await fetch(`/api/projects/${projectId}/file?path=${encodeURIComponent(filePath)}`);
+          
+          if (!response.ok) {
+            throw new Error('Failed to fetch file content');
+          }
+          
+          const fileData = await response.json();
+          
+          // Render file content
+          fileContentElement.innerHTML = `
+            <div class="path-breadcrumbs">
+              ${renderBreadcrumbs(filePath)}
+            </div>
+            <div class="file-info">
+              <strong>File Path:</strong> ${filePath}
+              <br>
+              <strong>Size:</strong> ${formatFileSize(fileData.size)}
+            </div>
+            <div class="file-preview-actions">
+              <button class="btn btn-secondary" id="download-file">Download File</button>
+            </div>
+            <div class="code-preview">
+              ${fileData.content.split('\n').map(line => 
+                `<span class="code-line">${escapeHtml(line)}</span>`
+              ).join('')}
+            </div>
+          `;
+          
+          // Add download handler
+          document.getElementById('download-file').addEventListener('click', () => {
+            downloadFile(filePath, fileData.content);
+          });
+        } catch (error) {
+          console.error('Error fetching file content:', error);
+          fileContentElement.innerHTML = `
+            <div class="alert alert-danger">
+              Failed to load file content: ${error.message}
+            </div>
+          `;
+        }
+      }
+      
+      // Format file size
+      function formatFileSize(bytes) {
+        if (bytes < 1024) return bytes + ' bytes';
+        if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(2) + ' KB';
+        if (bytes < 1024 * 1024 * 1024) return (bytes / (1024 * 1024)).toFixed(2) + ' MB';
+        return (bytes / (1024 * 1024 * 1024)).toFixed(2) + ' GB';
+      }
+      
+      // Render breadcrumbs
+      function renderBreadcrumbs(path) {
+        const parts = path.split('/');
+        let breadcrumbs = '<span class="breadcrumb-item" data-path="">&lt;root&gt;</span>';
+        let currentPath = '';
+        
+        for (let i = 0; i < parts.length; i++) {
+          if (parts[i] === '') continue;
+          
+          currentPath += '/' + parts[i];
+          
+          if (i < parts.length - 1) {
+            // This is a directory in the path
+            breadcrumbs += '<span class="breadcrumb-separator">/</span>';
+            breadcrumbs += `<span class="breadcrumb-item" data-path="${currentPath}">${parts[i]}</span>`;
+          } else {
+            // This is the file name
+            breadcrumbs += '<span class="breadcrumb-separator">/</span>';
+            breadcrumbs += `<span>${parts[i]}</span>`;
+          }
+        }
+        
+        return breadcrumbs;
+      }
+      
+      // Download file
+      function downloadFile(filePath, content) {
+        const fileName = filePath.split('/').pop();
+        const blob = new Blob([content], { type: 'text/plain' });
+        const url = URL.createObjectURL(blob);
+        
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = fileName;
+        a.click();
+        
+        URL.revokeObjectURL(url);
+      }
+      
+      // Escape HTML
+      function escapeHtml(unsafe) {
+        return unsafe
+          .replace(/&/g, "&amp;")
+          .replace(/</g, "&lt;")
+          .replace(/>/g, "&gt;")
+          .replace(/"/g, "&quot;")
+          .replace(/'/g, "&#039;");
+      }
+      
+      // Set project as active
+      async function setProjectAsActive() {
+        try {
+          if (!projectData) return;
+          
+          const response = await fetch('/api/active-directory', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+              id: projectData.id,
+              path: projectData.path,
+              name: projectData.name
+            })
+          });
+          
+          if (!response.ok) {
+            throw new Error('Failed to set active project');
+          }
+          
+          const result = await response.json();
+          
+          // Show success message
+          clearError();
+          errorContainer.innerHTML = `
+            <div class="alert alert-success">
+              Project "${projectData.name}" is now active. Claude will make changes in this directory.
+            </div>
+          `;
+          
+          // Update button state
+          setActiveButton.textContent = 'Active Project';
+          setActiveButton.disabled = true;
+          
+          // Hide the success message after 3 seconds
+          setTimeout(() => {
+            clearError();
+          }, 3000);
+        } catch (error) {
+          console.error('Error setting active project:', error);
+          showError(`Failed to set active project: ${error.message}`);
+        }
+      }
+      
+      // Initialize
+      async function init() {
+        try {
+          // Get project ID from URL
+          const urlParams = new URLSearchParams(window.location.search);
+          projectId = urlParams.get('id');
+          
+          if (!projectId) {
+            showError('Project ID is required');
+            return;
+          }
+          
+          // Load project data
+          projectData = await fetchProjectData();
+          
+          if (!projectData) {
+            showError('Failed to load project data');
+            return;
+          }
+          
+          // Set project name
+          projectNameElement.textContent = projectData.name;
+          
+          // Fetch project structure
+          projectStructure = await fetchProjectStructure();
+          
+          if (!projectStructure) {
+            showError('Failed to load project structure');
+            return;
+          }
+          
+          // Render file tree
+          renderFileTree(projectStructure.children || projectStructure);
+          
+          // Check if this is the active project
+          try {
+            const activeResponse = await fetch('/api/active-directory');
+            if (activeResponse.ok) {
+              const activeData = await activeResponse.json();
+              
+              if (activeData && activeData.id === projectId) {
+                setActiveButton.textContent = 'Active Project';
+                setActiveButton.disabled = true;
+              }
+            }
+          } catch (error) {
+            console.error('Error checking active project:', error);
+          }
+        } catch (error) {
+          console.error('Error initializing:', error);
+          showError('Error initializing file explorer');
+        }
+      }
+      
+      // Setup event listeners
+      function setupEventListeners() {
+        // Back button
+        if (backButton) {
+          backButton.addEventListener('click', () => {
+            window.location.href = '/directory-selector.html';
+          });
+        }
+        
+        // Set active button
+        if (setActiveButton) {
+          setActiveButton.addEventListener('click', async () => {
+            if (!projectData) return;
+            await setProjectAsActive();
+          });
+        }
+        
+        // Collapse all button
+        if (collapseAllButton) {
+          collapseAllButton.addEventListener('click', () => {
+            const openFolders = fileTreeElement.querySelectorAll('.folder.open');
+            openFolders.forEach(folder => {
+              folder.classList.remove('open');
+            });
+          });
+        }
+      }
+      
+      // Initialize
+      init();
+      
+      // Setup event listeners
+      setupEventListeners();
+    });
+  </script>
+</body>
+</html> 

@@ -1,0 +1,6 @@
+#!/usr/bin/expect -f
+set timeout -1
+spawn claude -p "generate a Dockerfile for a Node.js app"
+expect "^"
+send "\x04"
+expect eof 

@@ -1,0 +1,610 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Gaana AI Assistant - Setup</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    :root {
+      --mac-background: #f5f7fa;
+      --mac-window-bg: rgba(255, 255, 255, 0.95);
+      --mac-sidebar-bg: rgba(239, 239, 244, 0.8);
+      --mac-accent: #0069c2;
+      --mac-accent-hover: #0058a5;
+      --mac-text: #333333;
+      --mac-text-light: #666666;
+      --mac-border: #e1e2e3;
+      --mac-success: #28cd41;
+      --mac-warning: #ff9f0a;
+      --mac-danger: #ff3b30;
+      --mac-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+      --mac-shadow-sm: 0 2px 5px rgba(0, 0, 0, 0.05);
+      --mac-transition: all 0.2s ease-out;
+      --mac-radius: 10px;
+      --mac-radius-sm: 6px;
+      --mac-font: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    }
+    
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    
+    body {
+      font-family: var(--mac-font);
+      background-color: var(--mac-background);
+      color: var(--mac-text);
+      line-height: 1.5;
+      -webkit-font-smoothing: antialiased;
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+    
+    .onboarding-container {
+      max-width: 800px;
+      width: 100%;
+      margin: 0 auto;
+      padding: 40px 20px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      flex: 1;
+    }
+    
+    .logo {
+      width: 120px;
+      height: 120px;
+      margin-bottom: 30px;
+    }
+    
+    h1 {
+      font-size: 28px;
+      font-weight: 600;
+      margin-bottom: 20px;
+      text-align: center;
+    }
+    
+    p {
+      font-size: 16px;
+      color: var(--mac-text-light);
+      margin-bottom: 30px;
+      text-align: center;
+      max-width: 600px;
+    }
+    
+    .onboarding-steps {
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+    
+    .step {
+      background-color: var(--mac-window-bg);
+      border-radius: var(--mac-radius);
+      box-shadow: var(--mac-shadow-sm);
+      padding: 20px;
+      border: 1px solid var(--mac-border);
+      transition: var(--mac-transition);
+      opacity: 0.7;
+    }
+    
+    .step.active {
+      opacity: 1;
+      box-shadow: var(--mac-shadow);
+      border-color: var(--mac-accent);
+    }
+    
+    .step.completed {
+      border-left: 5px solid var(--mac-success);
+    }
+    
+    .step h2 {
+      font-size: 18px;
+      font-weight: 500;
+      margin-bottom: 10px;
+      display: flex;
+      align-items: center;
+    }
+    
+    .step h2 i {
+      margin-right: 10px;
+      font-size: 20px;
+    }
+    
+    .step-content {
+      padding: 10px 0;
+    }
+    
+    .permission-item {
+      display: flex;
+      padding: 12px;
+      background-color: rgba(0, 0, 0, 0.03);
+      border-radius: var(--mac-radius-sm);
+      margin-bottom: 10px;
+      align-items: center;
+    }
+    
+    .permission-icon {
+      font-size: 24px;
+      margin-right: 15px;
+      color: var(--mac-accent);
+      width: 30px;
+      text-align: center;
+    }
+    
+    .permission-details {
+      flex: 1;
+    }
+    
+    .permission-title {
+      font-weight: 500;
+      margin-bottom: 4px;
+    }
+    
+    .permission-description {
+      font-size: 14px;
+      color: var(--mac-text-light);
+    }
+    
+    .button-group {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 20px;
+    }
+    
+    .btn {
+      padding: 10px 20px;
+      border-radius: var(--mac-radius-sm);
+      font-size: 14px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: var(--mac-transition);
+      border: none;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-width: 120px;
+    }
+    
+    .btn i {
+      margin-right: 8px;
+    }
+    
+    .btn-primary {
+      background-color: var(--mac-accent);
+      color: white;
+    }
+    
+    .btn-primary:hover {
+      background-color: var(--mac-accent-hover);
+    }
+    
+    .btn-secondary {
+      background-color: transparent;
+      border: 1px solid var(--mac-border);
+      color: var(--mac-text);
+    }
+    
+    .btn-secondary:hover {
+      background-color: rgba(0, 0, 0, 0.05);
+    }
+    
+    .btn-success {
+      background-color: var(--mac-success);
+      color: white;
+    }
+    
+    .btn-success:hover {
+      background-color: #24b639;
+    }
+    
+    .btn:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+    
+    .status-indicator {
+      display: inline-block;
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      margin-right: 8px;
+    }
+    
+    .status-success {
+      background-color: var(--mac-success);
+    }
+    
+    .status-pending {
+      background-color: var(--mac-warning);
+    }
+    
+    .status-error {
+      background-color: var(--mac-danger);
+    }
+    
+    .hidden {
+      display: none;
+    }
+    
+    .project-paths-list {
+      max-height: 150px;
+      overflow-y: auto;
+      margin: 10px 0;
+      border: 1px solid var(--mac-border);
+      border-radius: var(--mac-radius-sm);
+    }
+    
+    .project-path-item {
+      padding: 8px 12px;
+      border-bottom: 1px solid var(--mac-border);
+      font-size: 14px;
+      display: flex;
+      align-items: center;
+    }
+    
+    .project-path-item:last-child {
+      border-bottom: none;
+    }
+    
+    .project-path-item i {
+      color: var(--mac-success);
+      margin-right: 8px;
+    }
+    
+    .loading-spinner {
+      display: inline-block;
+      width: 20px;
+      height: 20px;
+      border: 3px solid rgba(0, 0, 0, 0.1);
+      border-radius: 50%;
+      border-top-color: var(--mac-accent);
+      animation: spin 1s ease-in-out infinite;
+      margin-right: 10px;
+    }
+    
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+    
+    .notification {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      padding: 12px 16px;
+      background-color: var(--mac-window-bg);
+      border-radius: var(--mac-radius-sm);
+      box-shadow: var(--mac-shadow);
+      border-left: 4px solid var(--mac-accent);
+      display: flex;
+      align-items: center;
+      animation: slide-in 0.3s ease-out;
+      z-index: 1000;
+      max-width: 350px;
+    }
+    
+    .notification.error {
+      border-left-color: var(--mac-danger);
+    }
+    
+    .notification.success {
+      border-left-color: var(--mac-success);
+    }
+    
+    .notification i {
+      margin-right: 10px;
+      font-size: 18px;
+    }
+    
+    .notification.error i {
+      color: var(--mac-danger);
+    }
+    
+    .notification.success i {
+      color: var(--mac-success);
+    }
+    
+    .notification span {
+      flex: 1;
+      font-size: 14px;
+    }
+    
+    @keyframes slide-in {
+      from {
+        transform: translateX(100%);
+        opacity: 0;
+      }
+      to {
+        transform: translateX(0);
+        opacity: 1;
+      }
+    }
+    
+    @keyframes slide-out {
+      from {
+        transform: translateX(0);
+        opacity: 1;
+      }
+      to {
+        transform: translateX(100%);
+        opacity: 0;
+      }
+    }
+    
+    .notification.fade-out {
+      animation: slide-out 0.3s ease-out forwards;
+    }
+  </style>
+</head>
+<body>
+  <div class="onboarding-container">
+    <img src="logo.png" alt="Gaana AI Assistant" class="logo" id="logo-placeholder">
+    <h1>Welcome to Gaana AI Assistant</h1>
+    <p>Complete the setup below to get started with voice-controlled AI assistance for your projects.</p>
+    
+    <div class="onboarding-steps">
+      <div class="step active" id="step-permissions">
+        <h2><i class="fas fa-shield-alt"></i> Required Permissions</h2>
+        <div class="step-content">
+          <p>The following permissions are needed for Gaana AI Assistant to function properly:</p>
+          
+          <div class="permission-item">
+            <div class="permission-icon">
+              <i class="fas fa-desktop"></i>
+            </div>
+            <div class="permission-details">
+              <div class="permission-title">Desktop Control</div>
+              <div class="permission-description">Allows the assistant to control your mouse and keyboard when triggered by voice commands</div>
+            </div>
+            <div class="permission-status">
+              <span class="status-indicator status-pending" id="desktop-control-status"></span>
+            </div>
+          </div>
+          
+          <div class="permission-item">
+            <div class="permission-icon">
+              <i class="fas fa-folder-open"></i>
+            </div>
+            <div class="permission-details">
+              <div class="permission-title">File System Access</div>
+              <div class="permission-description">Allows the assistant to access and modify files in your selected project folders</div>
+            </div>
+            <div class="permission-status">
+              <span class="status-indicator status-pending" id="file-access-status"></span>
+            </div>
+          </div>
+          
+          <div class="button-group">
+            <button class="btn btn-secondary" id="btn-skip">Skip for Now</button>
+            <button class="btn btn-primary" id="btn-request-permissions">
+              <i class="fas fa-key"></i> Grant Permissions
+            </button>
+          </div>
+        </div>
+      </div>
+      
+      <div class="step" id="step-projects">
+        <h2><i class="fas fa-folder"></i> Selected Project Paths</h2>
+        <div class="step-content">
+          <p>These are the project folders you've authorized the assistant to access:</p>
+          
+          <div class="project-paths-list" id="project-paths-list">
+            <div class="project-path-item">
+              <i class="fas fa-info-circle"></i> No project paths selected yet
+            </div>
+          </div>
+          
+          <div class="button-group">
+            <button class="btn btn-secondary" id="btn-back-to-permissions">Back</button>
+            <button class="btn btn-success" id="btn-finish-setup">
+              <i class="fas fa-check"></i> Finish Setup
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="notification-container"></div>
+  
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      // DOM elements
+      const stepPermissions = document.getElementById('step-permissions');
+      const stepProjects = document.getElementById('step-projects');
+      const desktopControlStatus = document.getElementById('desktop-control-status');
+      const fileAccessStatus = document.getElementById('file-access-status');
+      const projectPathsList = document.getElementById('project-paths-list');
+      const notificationContainer = document.getElementById('notification-container');
+      
+      // Buttons
+      const btnRequestPermissions = document.getElementById('btn-request-permissions');
+      const btnSkip = document.getElementById('btn-skip');
+      const btnBackToPermissions = document.getElementById('btn-back-to-permissions');
+      const btnFinishSetup = document.getElementById('btn-finish-setup');
+      
+      // Logo placeholder
+      const logoPlaceholder = document.getElementById('logo-placeholder');
+      logoPlaceholder.style.backgroundColor = '#f1f1f1';
+      logoPlaceholder.style.borderRadius = '20px';
+      
+      // App state
+      const state = {
+        permissions: {
+          desktopControl: false,
+          fileAccess: false
+        },
+        authorizedPaths: []
+      };
+      
+      // Request permissions
+      btnRequestPermissions.addEventListener('click', async () => {
+        btnRequestPermissions.disabled = true;
+        btnRequestPermissions.innerHTML = '<div class="loading-spinner"></div> Processing...';
+        
+        try {
+          const result = await window.electron.requestPermissions(['desktop-control', 'file-access']);
+          
+          if (result.success) {
+            state.permissions = result.permissions;
+            state.authorizedPaths = result.authorizedPaths;
+            
+            updatePermissionStatus();
+            
+            if (state.permissions.fileAccess) {
+              showNotification('Permissions granted successfully!', 'success');
+              moveToProjects();
+            } else {
+              showNotification('File access is required to continue. Please try again.', 'error');
+            }
+          } else {
+            showNotification(result.message || 'Failed to request permissions', 'error');
+          }
+        } catch (error) {
+          console.error('Error requesting permissions:', error);
+          showNotification('An error occurred while requesting permissions', 'error');
+        } finally {
+          btnRequestPermissions.disabled = false;
+          btnRequestPermissions.innerHTML = '<i class="fas fa-key"></i> Grant Permissions';
+        }
+      });
+      
+      // Skip button
+      btnSkip.addEventListener('click', () => {
+        showNotification('Permissions are required for full functionality', 'error');
+      });
+      
+      // Back button
+      btnBackToPermissions.addEventListener('click', () => {
+        stepProjects.classList.remove('active');
+        stepPermissions.classList.add('active');
+      });
+      
+      // Finish setup
+      btnFinishSetup.addEventListener('click', async () => {
+        btnFinishSetup.disabled = true;
+        btnFinishSetup.innerHTML = '<div class="loading-spinner"></div> Finishing...';
+        
+        // Load the main app with a short delay to show the success notification
+        showNotification('Setup completed successfully!', 'success');
+        
+        setTimeout(() => {
+          window.location.href = 'http://localhost:3000';
+        }, 1500);
+      });
+      
+      // Update permission status indicators
+      function updatePermissionStatus() {
+        // Desktop control
+        if (state.permissions.desktopControl) {
+          desktopControlStatus.classList.remove('status-pending', 'status-error');
+          desktopControlStatus.classList.add('status-success');
+        } else {
+          desktopControlStatus.classList.remove('status-success');
+          desktopControlStatus.classList.add('status-pending');
+        }
+        
+        // File access
+        if (state.permissions.fileAccess) {
+          fileAccessStatus.classList.remove('status-pending', 'status-error');
+          fileAccessStatus.classList.add('status-success');
+        } else {
+          fileAccessStatus.classList.remove('status-success');
+          fileAccessStatus.classList.add('status-pending');
+        }
+        
+        // Update project paths
+        renderProjectPaths();
+      }
+      
+      // Render project paths
+      function renderProjectPaths() {
+        if (state.authorizedPaths && state.authorizedPaths.length > 0) {
+          projectPathsList.innerHTML = '';
+          
+          state.authorizedPaths.forEach(path => {
+            const pathItem = document.createElement('div');
+            pathItem.className = 'project-path-item';
+            pathItem.innerHTML = `
+              <i class="fas fa-check-circle"></i>
+              <span title="${path}">${path}</span>
+            `;
+            projectPathsList.appendChild(pathItem);
+          });
+        } else {
+          projectPathsList.innerHTML = `
+            <div class="project-path-item">
+              <i class="fas fa-info-circle"></i> No project paths selected yet
+            </div>
+          `;
+        }
+      }
+      
+      // Move to projects step
+      function moveToProjects() {
+        stepPermissions.classList.remove('active');
+        stepPermissions.classList.add('completed');
+        stepProjects.classList.add('active');
+        renderProjectPaths();
+      }
+      
+      // Show notification
+      function showNotification(message, type = 'info') {
+        const notification = document.createElement('div');
+        notification.className = `notification ${type}`;
+        
+        let icon = 'info-circle';
+        if (type === 'success') icon = 'check-circle';
+        if (type === 'error') icon = 'exclamation-circle';
+        
+        notification.innerHTML = `
+          <i class="fas fa-${icon}"></i>
+          <span>${message}</span>
+        `;
+        
+        notificationContainer.appendChild(notification);
+        
+        setTimeout(() => {
+          notification.classList.add('fade-out');
+          setTimeout(() => {
+            notification.remove();
+          }, 300);
+        }, 4000);
+      }
+      
+      // Initialize
+      async function init() {
+        try {
+          // Load existing data if available
+          const data = await window.electron.loadProjects();
+          
+          if (data.authorizedPaths && data.authorizedPaths.length > 0) {
+            state.authorizedPaths = data.authorizedPaths;
+            state.permissions.fileAccess = true;
+          }
+          
+          // Check if desktop control permission is granted
+          state.permissions.desktopControl = await window.electron.getRemoteControlStatus?.() || false;
+          
+          updatePermissionStatus();
+          
+          // If permissions are already granted, move to projects
+          if (state.permissions.fileAccess) {
+            moveToProjects();
+          }
+        } catch (error) {
+          console.error('Error initializing:', error);
+        }
+      }
+      
+      // Start initialization
+      init();
+    });
+  </script>
+</body>
+</html> 

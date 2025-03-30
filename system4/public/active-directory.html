@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Active Directory Info</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      line-height: 1.6;
+      color: #333;
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 20px;
+    }
+    header {
+      background-color: #f5f5f5;
+      padding: 20px;
+      border-radius: 5px;
+      margin-bottom: 20px;
+      border-left: 5px solid #007bff;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    }
+    h1 {
+      margin-top: 0;
+      color: #007bff;
+    }
+    .info-box {
+      background-color: #f9f9f9;
+      border: 1px solid #ddd;
+      border-radius: 5px;
+      padding: 15px;
+      margin-bottom: 20px;
+    }
+    .project-path {
+      font-family: monospace;
+      background-color: #eef;
+      padding: 10px;
+      border-radius: 3px;
+      border-left: 3px solid #007bff;
+      word-break: break-all;
+    }
+    .info-label {
+      font-weight: bold;
+      color: #555;
+    }
+    .alert {
+      background-color: #fff3cd;
+      border: 1px solid #ffeeba;
+      border-radius: 5px;
+      padding: 10px;
+      margin-bottom: 20px;
+      color: #856404;
+    }
+    .success {
+      background-color: #d4edda;
+      border: 1px solid #c3e6cb;
+      color: #155724;
+    }
+    .danger {
+      background-color: #f8d7da;
+      border: 1px solid #f5c6cb;
+      color: #721c24;
+    }
+    .button {
+      display: inline-block;
+      padding: 8px 16px;
+      background-color: #007bff;
+      color: white;
+      text-decoration: none;
+      border-radius: 4px;
+      font-weight: 500;
+      transition: background-color 0.2s;
+    }
+    .button:hover {
+      background-color: #0069d9;
+    }
+    footer {
+      margin-top: 40px;
+      padding-top: 20px;
+      border-top: 1px solid #eee;
+      font-size: 0.9em;
+      color: #777;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Active Project Information</h1>
+    <p>Shows the currently active project for voice commands</p>
+  </header>
+
+  <div id="active-project-info" class="info-box">
+    <div id="loading">Loading active project information...</div>
+  </div>
+
+  <div class="alert" id="no-active-alert" style="display: none;">
+    No active project is currently set. Voice commands will have nowhere to make changes.
+  </div>
+
+  <div class="alert danger" id="restricted-alert" style="display: none;">
+    Warning: The current active project is in a restricted directory. Changes will be prevented for security.
+  </div>
+
+  <p>
+    <a href="directory-selector.html" class="button">Change Active Project</a>
+  </p>
+
+  <footer>
+    <p>Voice Assistant Control Panel | Powered by Claude</p>
+  </footer>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      fetchActiveProject();
+      
+      // Fetch the active project
+      function fetchActiveProject() {
+        fetch('/api/active-directory')
+          .then(response => {
+            if (!response.ok) {
+              throw new Error('Failed to fetch active directory');
+            }
+            return response.json();
+          })
+          .then(data => {
+            displayActiveProject(data);
+          })
+          .catch(error => {
+            console.error('Error fetching active project:', error);
+            document.getElementById('active-project-info').innerHTML = `
+              <div class="alert danger">
+                Error loading active project information: ${error.message}
+              </div>
+            `;
+          });
+      }
+      
+      // Display the active project information
+      function displayActiveProject(data) {
+        const container = document.getElementById('active-project-info');
+        
+        if (!data || !data.path) {
+          container.innerHTML = `<p>No active project is currently set.</p>`;
+          document.getElementById('no-active-alert').style.display = 'block';
+          return;
+        }
+        
+        // Check if the path contains "gaana" (the restricted directory)
+        const isRestricted = data.path.toLowerCase().includes('gaana');
+        if (isRestricted) {
+          document.getElementById('restricted-alert').style.display = 'block';
+        }
+        
+        container.innerHTML = `
+          <p><span class="info-label">Project Name:</span> ${data.projectName || 'Unnamed Project'}</p>
+          <p><span class="info-label">Project Path:</span></p>
+          <div class="project-path">${data.path}</div>
+          <p><span class="info-label">Status:</span> 
+            <span class="${isRestricted ? 'danger' : 'success'}">
+              ${isRestricted ? 'Restricted (Cannot modify)' : 'Active (Ready for voice commands)'}
+            </span>
+          </p>
+        `;
+      }
+    });
+  </script>
+</body>
+</html> 

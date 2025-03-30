@@ -1,0 +1,482 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Gaana - AI Voice Assistant</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="/css/mac-styles.css">
+  <link rel="stylesheet" href="/css/animations.css">
+  <link rel="stylesheet" href="/css/dark-mode.css">
+  <link rel="stylesheet" href="/css/styles.css">
+</head>
+<body>
+  <div class="app-container fade-in">
+    <!-- Sidebar Navigation -->
+    <div id="sidebar" class="sidebar slide-right">
+      <div class="sidebar-section">
+        <h3 class="sidebar-title fade-in">Main</h3>
+        <ul class="sidebar-items stagger-animation">
+          <li class="sidebar-item active">
+            <a href="#" data-view="dashboard">
+              <i class="fa-solid fa-house"></i>
+              Dashboard
+            </a>
+          </li>
+          <li class="sidebar-item">
+            <a href="#" data-view="projects">
+              <i class="fa-solid fa-folder"></i>
+              Projects
+            </a>
+          </li>
+        </ul>
+      </div>
+      
+      <div class="sidebar-section">
+        <h3 class="sidebar-title fade-in">Features</h3>
+        <ul class="sidebar-items stagger-animation" style="animation-delay: 0.1s;">
+          <li class="sidebar-item">
+            <a href="#" data-view="calls">
+              <i class="fa-solid fa-phone"></i>
+              Phone Calls
+            </a>
+          </li>
+          <li class="sidebar-item">
+            <a href="#" data-view="remote">
+              <i class="fa-solid fa-desktop"></i>
+              Remote Control
+            </a>
+          </li>
+          <li class="sidebar-item">
+            <a href="#" data-view="voice">
+              <i class="fa-solid fa-microphone"></i>
+              Voice Commands
+            </a>
+          </li>
+        </ul>
+      </div>
+      
+      <div class="sidebar-section">
+        <h3 class="sidebar-title fade-in">System</h3>
+        <ul class="sidebar-items stagger-animation" style="animation-delay: 0.2s;">
+          <li class="sidebar-item">
+            <a href="#" data-view="settings">
+              <i class="fa-solid fa-gear"></i>
+              Settings
+            </a>
+          </li>
+          <li class="sidebar-item">
+            <a href="#" data-view="help">
+              <i class="fa-solid fa-circle-info"></i>
+              Help
+            </a>
+          </li>
+        </ul>
+      </div>
+      <div class="sidebar-footer stagger-animation" style="animation-delay: 0.3s;">
+        <button id="theme-toggle" class="theme-toggle-btn">
+          <i class="fa-solid fa-moon"></i>
+          <span class="theme-text">Dark Mode</span>
+        </button>
+      </div>
+    </div>
+    
+    <!-- Main Content -->
+    <div id="content" class="content fade-in">
+      <!-- Header -->
+      <div class="header slide-down">
+        <h1 class="title">Dashboard</h1>
+        <div class="status-group">
+          <div class="status-chip">
+            <span>Server</span>
+            <div id="server-status" class="status-indicator status-warning"></div>
+          </div>
+          <div class="status-chip">
+            <span>Remote Control</span>
+            <div id="remote-status" class="status-indicator status-warning"></div>
+          </div>
+          <div class="status-chip">
+            <span>AI Provider</span>
+            <div id="ai-status" class="status-indicator status-warning"></div>
+          </div>
+          <div class="status-chip">
+            <span>MongoDB</span>
+            <div id="db-status" class="status-indicator status-warning"></div>
+          </div>
+          <div class="status-chip">
+            <span>Active Dir</span>
+            <div id="active-dir-status" class="status-indicator status-warning" title="No active directory selected"></div>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Main Content Area -->
+      <div class="main-content">
+        <!-- Feature Cards (Dashboard View) -->
+        <div class="cards-row stagger-animation">
+          <div class="card hover-lift">
+            <div class="card-header">
+              <h2 class="card-title">
+                <i class="fa-solid fa-phone icon-pulse-hover"></i>
+                Phone Calls
+              </h2>
+            </div>
+            <div class="card-body">
+              <p>Manage and monitor phone calls with Twilio integration. Set up automated responses and AI call handling.</p>
+            </div>
+            <div class="card-footer">
+              <button class="btn btn-primary" data-view="calls">Manage Calls</button>
+            </div>
+          </div>
+          
+          <div class="card hover-lift">
+            <div class="card-header">
+              <h2 class="card-title">
+                <i class="fa-solid fa-desktop icon-pulse-hover"></i>
+                Remote Control
+              </h2>
+            </div>
+            <div class="card-body">
+              <p>Control your desktop with voice commands or phone calls. Automate tasks and system operations.</p>
+            </div>
+            <div class="card-footer">
+              <button class="btn btn-primary" data-view="remote">Configure</button>
+            </div>
+          </div>
+          
+          <div class="card hover-lift">
+            <div class="card-header">
+              <h2 class="card-title">
+                <i class="fa-solid fa-terminal icon-pulse-hover"></i>
+                Project Management
+              </h2>
+            </div>
+            <div class="card-body">
+              <p>Manage your projects and their configurations. Set up paths, permissions, and automation rules.</p>
+            </div>
+            <div class="card-footer">
+              <button class="btn btn-primary" data-view="projects">View Projects</button>
+              <a href="/directory-selector.html" class="btn btn-accent">
+                <i class="fa-solid fa-folder-open"></i>
+                Set Active Directory
+              </a>
+            </div>
+          </div>
+        </div>
+        
+        <!-- AI Provider Information Section -->
+        <section id="ai-info" class="section fade-in">
+          <div class="section-header">
+            <h2 class="section-title slide-up">AI Providers</h2>
+          </div>
+          <div class="section-body slide-up" style="animation-delay: 0.1s;">
+            <div class="card hover-lift">
+              <div class="card-header">
+                <h3 class="card-title">
+                  <i class="fa-solid fa-robot icon-pulse-hover"></i>
+                  Natural Language Processing
+                </h3>
+              </div>
+              <div class="card-body">
+                <p>Voice commands are processed using these AI providers:</p>
+                <div id="ai-provider-info" class="provider-info">
+                  <div class="empty-state">
+                    <i class="fa-solid fa-spinner fa-spin"></i>
+                    <p>Loading AI providers...</p>
+                  </div>
+                </div>
+              </div>
+              <div class="card-footer">
+                <button class="btn btn-sm ai-provider-switch" data-provider="claude">
+                  <i class="fa-solid fa-code"></i>
+                  Use Claude AI
+                </button>
+                <button class="btn btn-sm ai-provider-switch" data-provider="perplexity">
+                  <i class="fa-solid fa-brain"></i>
+                  Use Perplexity
+                </button>
+              </div>
+            </div>
+          </div>
+        </section>
+        
+        <!-- Project Management Section (Projects View) -->
+        <section id="project-management" class="section fade-in hidden">
+          <div class="section-header">
+            <h2 class="section-title slide-up">Add New Project</h2>
+          </div>
+          <div class="section-body slide-up" style="animation-delay: 0.1s;">
+            <form id="project-form">
+              <div class="form-group">
+                <label for="project-name" class="form-label">Project Name</label>
+                <input type="text" id="project-name" class="form-control" placeholder="Enter project name" required>
+              </div>
+              <div class="form-group">
+                <label for="project-path" class="form-label">Project Path</label>
+                <input type="text" id="project-path" class="form-control" placeholder="Enter project path" required>
+              </div>
+              <div class="form-group">
+                <label for="project-type" class="form-label">Project Type</label>
+                <select id="project-type" class="form-control" required>
+                  <option value="web">Web Application</option>
+                  <option value="desktop">Desktop Application</option>
+                  <option value="mobile">Mobile Application</option>
+                  <option value="other">Other</option>
+                </select>
+              </div>
+              <button type="submit" class="btn btn-primary hover-lift">Add Project</button>
+            </form>
+          </div>
+        </section>
+        
+        <!-- Projects List Section (Projects View) -->
+        <section id="project-list" class="section fade-in hidden">
+          <div class="section-header">
+            <h2 class="section-title slide-up" style="animation-delay: 0.2s;">Available Projects</h2>
+          </div>
+          <div class="section-body slide-up" style="animation-delay: 0.3s;">
+            <div id="project-items" class="project-items">
+              <div class="empty-state">
+                <i class="fa-solid fa-spinner fa-spin"></i>
+                <p>Loading projects...</p>
+              </div>
+            </div>
+          </div>
+        </section>
+        
+        <!-- Phone Calls Section (Calls View) -->
+        <section id="calls-section" class="section fade-in hidden">
+          <div class="section-header">
+            <h2 class="section-title slide-up">Phone Calls</h2>
+          </div>
+          <div class="section-body slide-up" style="animation-delay: 0.1s;">
+            <div class="card hover-lift">
+              <div class="card-header">
+                <h3 class="card-title">
+                  <i class="fa-solid fa-phone-volume"></i>
+                  Twilio Integration
+                </h3>
+              </div>
+              <div class="card-body">
+                <p>Configure your Twilio integration settings and manage voice calls.</p>
+                <div class="form-group">
+                  <label for="twilio-number" class="form-label">Twilio Phone Number</label>
+                  <input type="text" id="twilio-number" class="form-control" value="+15102913634" readonly>
+                </div>
+                <div class="form-group">
+                  <label for="webhook-url" class="form-label">Webhook URL</label>
+                  <input type="text" id="webhook-url" class="form-control" value="https://399d-192-35-49-99.ngrok-free.app/voice" readonly>
+                </div>
+              </div>
+              <div class="card-footer">
+                <button class="btn btn-primary" id="make-call">
+                  <i class="fa-solid fa-phone"></i>
+                  Make Test Call
+                </button>
+              </div>
+            </div>
+          </div>
+        </section>
+        
+        <!-- Remote Control Section (Remote View) -->
+        <section id="remote-section" class="section fade-in hidden">
+          <div class="section-header">
+            <h2 class="section-title slide-up">Remote Control</h2>
+          </div>
+          <div class="section-body slide-up" style="animation-delay: 0.1s;">
+            <div class="card hover-lift">
+              <div class="card-header">
+                <h3 class="card-title">
+                  <i class="fa-solid fa-desktop"></i>
+                  Desktop Control
+                </h3>
+              </div>
+              <div class="card-body">
+                <p>Control your desktop remotely using voice commands or web interface.</p>
+              </div>
+              <div class="card-footer">
+                <a href="/remote" class="btn btn-primary" target="_blank">
+                  <i class="fa-solid fa-external-link-alt"></i>
+                  Open Remote Control Interface
+                </a>
+              </div>
+            </div>
+          </div>
+        </section>
+        
+        <!-- Settings View -->
+        <section id="settings" class="section fade-in hidden">
+          <div class="section-header">
+            <h2 class="section-title slide-up">Settings</h2>
+          </div>
+          <div class="section-body slide-up" style="animation-delay: 0.1s;">
+            <!-- Theme Settings -->
+            <div class="card hover-lift">
+              <div class="card-header">
+                <h3 class="card-title">
+                  <i class="fa-solid fa-palette"></i>
+                  Theme Settings
+                </h3>
+              </div>
+              <div class="card-body">
+                <div class="setting-row">
+                  <label for="dark-mode-toggle">Dark Mode</label>
+                  <div class="toggle-switch">
+                    <input type="checkbox" id="dark-mode-toggle" class="toggle-input">
+                    <label for="dark-mode-toggle" class="toggle-label"></label>
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+            <!-- Directory Permissions -->
+            <div class="card hover-lift">
+              <div class="card-header">
+                <h3 class="card-title">
+                  <i class="fa-solid fa-folder-open"></i>
+                  Directory Permissions
+                </h3>
+                <div class="card-actions">
+                  <button id="add-directory-btn" class="btn btn-sm btn-primary">
+                    <i class="fa-solid fa-plus"></i>
+                    Add Directory
+                  </button>
+                  <button id="init-directories-btn" class="btn btn-sm">
+                    <i class="fa-solid fa-sync"></i>
+                    Initialize From Env
+                  </button>
+                  <a href="/directory-selector.html" class="btn btn-sm btn-accent">
+                    <i class="fa-solid fa-bullseye"></i>
+                    Set Active Directory
+                  </a>
+                </div>
+              </div>
+              <div class="card-body">
+                <p>Configure which directories Claude AI can access and modify:</p>
+                <div id="directories-container" class="directories-container">
+                  <div class="empty-state">
+                    <i class="fa-solid fa-spinner fa-spin"></i>
+                    <p>Loading directories...</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+            <!-- API Keys -->
+            <div class="card hover-lift">
+              <div class="card-header">
+                <h3 class="card-title">
+                  <i class="fa-solid fa-key"></i>
+                  API Keys
+                </h3>
+              </div>
+              <div class="card-body">
+                <div class="setting-group">
+                  <label for="claude-api-key">Claude API Key</label>
+                  <div class="api-key-input">
+                    <input type="password" id="claude-api-key" placeholder="sk-ant-api03-*****" class="form-control">
+                    <button id="toggle-claude-key" type="button" class="toggle-password">
+                      <i class="fa-solid fa-eye"></i>
+                    </button>
+                  </div>
+                </div>
+                
+                <div class="setting-group">
+                  <label for="perplexity-api-key">Perplexity API Key</label>
+                  <div class="api-key-input">
+                    <input type="password" id="perplexity-api-key" placeholder="pplx-*****" class="form-control">
+                    <button id="toggle-perplexity-key" type="button" class="toggle-password">
+                      <i class="fa-solid fa-eye"></i>
+                    </button>
+                  </div>
+                </div>
+                
+                <div class="form-actions">
+                  <button id="save-api-keys" class="btn btn-primary">
+                    <i class="fa-solid fa-save"></i>
+                    Save API Keys
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+        
+        <!-- Directory Modal -->
+        <div id="directory-modal" class="modal hidden">
+          <div class="modal-overlay"></div>
+          <div class="modal-container">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h3 class="modal-title">Add Directory</h3>
+                <button class="modal-close">
+                  <i class="fa-solid fa-times"></i>
+                </button>
+              </div>
+              <div class="modal-body">
+                <form id="directory-form">
+                  <div class="directory-form-group">
+                    <label for="directory-path">Directory Path *</label>
+                    <input type="text" id="directory-path" required placeholder="/path/to/directory">
+                    <p class="form-help">The absolute path to the directory on disk</p>
+                  </div>
+                  
+                  <div class="directory-form-group">
+                    <label for="directory-desc">Description</label>
+                    <textarea id="directory-desc" placeholder="What is this directory used for?"></textarea>
+                  </div>
+                  
+                  <div class="directory-form-group">
+                    <label>Permissions</label>
+                    <div class="checkbox-group">
+                      <input type="checkbox" id="allow-modification">
+                      <label for="allow-modification">Allow file modification</label>
+                    </div>
+                    <div class="checkbox-group">
+                      <input type="checkbox" id="allow-execution">
+                      <label for="allow-execution">Allow command execution</label>
+                    </div>
+                  </div>
+                  
+                  <div class="directory-form-group">
+                    <label for="allowed-filetypes">Allowed File Types</label>
+                    <input type="text" id="allowed-filetypes" placeholder="js,html,css,json,md">
+                    <p class="form-help">Comma-separated list of file extensions (without dots)</p>
+                  </div>
+                  
+                  <div class="directory-form-group">
+                    <label for="allowed-commands">Allowed Commands</label>
+                    <input type="text" id="allowed-commands" placeholder="ls,pwd,cd,cat,npm">
+                    <p class="form-help">Comma-separated list of commands</p>
+                  </div>
+                  
+                  <div class="modal-actions">
+                    <button type="button" class="btn modal-cancel">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Save Directory</button>
+                  </div>
+                </form>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Loading Overlay -->
+  <div id="loading-overlay" class="loading-overlay hidden">
+    <div class="loading-spinner"></div>
+    <p class="loading-text fade-in">Processing your request...</p>
+  </div>
+  
+  <!-- Notification Container -->
+  <div id="notification-container" class="notification-container"></div>
+  
+  <!-- Font Awesome Icons -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/js/all.min.js"></script>
+  
+  <!-- Application JavaScript -->
+  <script src="/js/app.js"></script>
+  <script src="/js/projectManager.js"></script>
+</body>
+</html> 
