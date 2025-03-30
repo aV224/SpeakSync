@@ -1,4 +1,4 @@
-Video Link since it didn't appear in the submission link: https://vimeo.com/1070804166?share=copy
+Video Link: https://vimeo.com/1070804166?share=copy
 
 
 # Twilio Voice AI Agent
